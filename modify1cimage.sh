@@ -5,7 +5,7 @@
 BASE_DIR="."
 FLAG_DIR="."
 IMG_DIR="./squashfs-root"
-FEATURES_DIR="./features"
+FEATURES_DIR="$BASEDIR/dustbuilder-features"
 
 if [[ "$OSTYPE" != "linux-gnu"* ]]; then
     echo "WARNING: Unsupported OS, image generation might fail or create bad images. Do not proceed if you are not sure what you are doing"
@@ -14,8 +14,8 @@ if [[ "$OSTYPE" != "linux-gnu"* ]]; then
 fi
 
 command -v unzip >/dev/null 2>&1 || { echo "ERROR: unzip command not found, aborting"; exit 1; }
-command -v unsquashfs >/dev/null 2>&1 || { echo "ERROR: unzip command not found, aborting"; exit 1; }
-command -v mksquashfs >/dev/null 2>&1 || { echo "ERROR: unzip command not found, aborting"; exit 1; }
+command -v unsquashfs >/dev/null 2>&1 || { echo "ERROR: unsquashfs command not found, aborting"; exit 1; }
+command -v mksquashfs >/dev/null 2>&1 || { echo "ERROR: mksquashfs command not found, aborting"; exit 1; }
 command -v install >/dev/null 2>&1 || { echo "ERROR: install command not found, aborting"; exit 1; }
 command -v md5sum >/dev/null 2>&1 || { echo "ERROR: md5sum command not found, aborting"; exit 1; }
 command -v git >/dev/null 2>&1 || { echo "ERROR: git command not found, aborting"; exit 1; }
@@ -44,8 +44,13 @@ if [ ! -f $FLAG_DIR/jobid ]; then
 fi
 
 if [ ! -d $FEATURES_DIR ]; then
-    echo "ERROR: Features directory not found. You might want to clone the repo from https://github.com/dgiese/dustbuilder-features to ${FEATURES_DIR}, aborting"
+
+    git clone https://github.com/dgiese/dustbuilder-features.git $FEATURES_DIR
+    echo "ERROR: FEATURES_DIR not found, aborting"
+    echo "the git clone of 'https://github.com/dgiese/dustbuilder-features' to $FEATURES_DIR  didnt work"
+    if [ ! -d $FEATURES_DIR ]; then
     exit 1
+    fi
 fi
 
 DEVICETYPE=$(cat "$FLAG_DIR/devicetype")
